@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import {
-  ENTITY_NAME_KEY,
-  ATTRUBUTE_KEY,
-  OPTIONS_KEY,
+  ATTRIBUTE_KEY,
   ENTITY_METADATA,
+  ENTITY_NAME_KEY,
+  OPTIONS_KEY,
 } from '../orm.constant';
 import { mergeDeep } from './deep-merge.utils';
 
@@ -24,7 +24,7 @@ export function getEntityName(target: any): string {
 }
 
 export function getAttributes(target: any): any | undefined {
-  const attributes = Reflect.getMetadata(ATTRUBUTE_KEY, target);
+  const attributes = Reflect.getMetadata(ATTRIBUTE_KEY, target);
 
   if (attributes) {
     return Object.keys(attributes).reduce((copy, key) => {
@@ -35,7 +35,7 @@ export function getAttributes(target: any): any | undefined {
 }
 
 export function setAttributes(target: any, attributes: any) {
-  Reflect.defineMetadata(ATTRUBUTE_KEY, { ...attributes }, target);
+  Reflect.defineMetadata(ATTRIBUTE_KEY, { ...attributes }, target);
 }
 
 export function addAttribute(target: any, name: string, options: any): void {
