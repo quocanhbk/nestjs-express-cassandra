@@ -1,5 +1,6 @@
+import { pascalToSnakeCase } from '../../utils/string';
 import { EntityOptions } from '../interfaces';
-import { setEntityName, addOptions } from '../utils/decorator.utils';
+import { addOptions, setEntityName } from '../utils/decorator.utils';
 
 export function Entity<T = any>(options?: EntityOptions<T>): ClassDecorator;
 export function Entity<T = any>(
@@ -14,10 +15,13 @@ export function Entity(
     (typeof nameOrOptions === 'object'
       ? (nameOrOptions as EntityOptions)
       : maybeOptions) || {};
-  const name =
-    typeof nameOrOptions === 'string' ? nameOrOptions : options.table_name;
 
   return (target): void => {
+    const name =
+      typeof nameOrOptions === 'string'
+        ? nameOrOptions
+        : options.table_name || pascalToSnakeCase(target.name);
+
     options.instanceMethods = target.prototype;
     options.classMethods = target;
 

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
-import { CatEntity } from './entities/cat.entity';
-import { CatsService } from './cat.service';
+import { ExpressCassandraModule } from '@quocanhbk17/express-cassandra';
 import { CatsController } from './cat.controller';
+import { CatsService } from './cat.service';
+import { CatEntity } from './entities/cat.entity';
 
 @Module({
   imports: [ExpressCassandraModule.forFeature([CatEntity])],

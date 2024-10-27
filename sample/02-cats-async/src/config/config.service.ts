@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
-  ExpressCassandraOptionsFactory,
   ExpressCassandraModuleOptions,
-} from '@iaminfinity/express-cassandra';
+  ExpressCassandraOptionsFactory,
+} from '@quocanhbk17/express-cassandra';
 
 @Injectable()
 export class ConfigService implements ExpressCassandraOptionsFactory {

@@ -1,48 +1,58 @@
+import { Provider } from '@nestjs/common';
+import { defer, lastValueFrom } from 'rxjs';
 import {
-  getModelToken,
+  BaseModel,
+  Connection,
+  ConnectionOptions,
+  loadModel,
+  Repository,
+} from './orm';
+import { RepositoryFactory } from './orm/repositories/repository.factory';
+import { getEntity } from './orm/utils/decorator.utils';
+import {
   getConnectionToken,
+  getModelToken,
   getRepositoryToken,
 } from './utils/cassandra-orm.utils';
-import { defer } from 'rxjs';
-import { loadModel, Repository, ConnectionOptions, Connection } from './orm';
-import { getEntity } from './orm/utils/decorator.utils';
-import { Provider } from '@nestjs/common';
-import { RepositoryFactory } from './orm/repositories/repository.factory';
 
 export function createExpressCassandraProviders(
-  entities?: Function[],
+  entities: Function[] = [],
   connection?: Connection | ConnectionOptions | string,
 ) {
-  const providerModel = entity => ({
+  const provideModel = (entity: Function) => ({
     provide: getModelToken(entity),
     useFactory: async (connectionLike: Connection) => {
-      return await defer(() => loadModel(connectionLike, entity)).toPromise();
+      return await lastValueFrom(
+        defer(() => loadModel(connectionLike, entity)),
+      );
     },
     inject: [getConnectionToken(connection)],
   });
 
-  const provideRepository = entity => ({
+  const provideRepository = (entity: Function) => ({
     provide: getRepositoryToken(entity),
-    useFactory: async model => RepositoryFactory.create(entity, model),
+    useFactory: (model: BaseModel) => RepositoryFactory.create(entity, model),
     inject: [getModelToken(entity)],
   });
 
-  const provideCustomRepository = EntityRepository => {
+  const provideCustomRepository = (EntityRepository: typeof Repository) => {
     const entity = getEntity(EntityRepository);
     return {
       provide: getRepositoryToken(EntityRepository),
-      useFactory: async model =>
+      useFactory: (model: BaseModel) =>
         RepositoryFactory.create(entity, model, EntityRepository),
       inject: [getModelToken(entity)],
     };
   };
 
   const providers: Provider[] = [];
-  (entities || []).forEach(entity => {
+  entities.forEach(entity => {
     if (entity.prototype instanceof Repository) {
-      return providers.push(provideCustomRepository(entity));
+      return providers.push(
+        provideCustomRepository(entity as typeof Repository),
+      );
     }
-    return providers.push(providerModel(entity), provideRepository(entity));
+    return providers.push(provideModel(entity), provideRepository(entity));
   });
 
   return [...providers];

@@ -8,6 +8,8 @@ export type ExpressCassandraModuleOptions = {
   retryDelay?: number;
 
   keepConnectionAlive?: boolean;
+
+  udts?: Function[];
 } & Partial<ConnectionOptions>;
 
 export interface ExpressCassandraOptionsFactory {

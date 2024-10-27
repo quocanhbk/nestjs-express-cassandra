@@ -1,11 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ExpressCassandraCoreModule } from './express-casandra-core.module';
-import {
-  ExpressCassandraModuleOptions,
-  ExpressCassandraModuleAsyncOptions,
-} from './interfaces';
+import { ExpressCassandraCoreModule } from './express-cassandra-core.module';
 import { createExpressCassandraProviders } from './express-cassandra.providers';
-import { ConnectionOptions, Connection } from './orm';
+import {
+  ExpressCassandraModuleAsyncOptions,
+  ExpressCassandraModuleOptions,
+} from './interfaces';
+import { Connection, ConnectionOptions } from './orm';
 
 @Module({})
 export class ExpressCassandraModule {

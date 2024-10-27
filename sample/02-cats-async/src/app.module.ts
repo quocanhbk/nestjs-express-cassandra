@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
-import { CatsModule } from './cats';
-import { ConfigService } from './config/config.service';
-import { ConfigModule } from './config/config.module';
-import { CatEntity } from './cats/entities/cat.entity';
+import { ExpressCassandraModule } from '@quocanhbk17/express-cassandra';
 import { AppService } from './app.service';
+import { CatsModule } from './cats';
+import { CatEntity } from './cats/entities/cat.entity';
+import { ConfigModule } from './config/config.module';
+import { ConfigService } from './config/config.service';
 
 @Module({
   imports: [

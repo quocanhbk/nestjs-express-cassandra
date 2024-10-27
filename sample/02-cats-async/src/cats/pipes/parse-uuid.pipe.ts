@@ -1,10 +1,10 @@
 import {
-  PipeTransform,
   ArgumentMetadata,
   BadRequestException,
   Injectable,
+  PipeTransform,
 } from '@nestjs/common';
-import { types, uuid, isUuid } from '@iaminfinity/express-cassandra';
+import { isUuid, types, uuid } from '@quocanhbk17/express-cassandra';
 
 @Injectable()
 export class ParseUuidPipe implements PipeTransform<any, types.Uuid> {

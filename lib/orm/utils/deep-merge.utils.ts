@@ -1,5 +1,5 @@
-import * as merge from 'merge-deep';
+import merge from 'merge-deep';
 
-export function mergeDeep(target, sources): object {
+export function mergeDeep(target: any, sources: any): object {
   return merge(target, sources);
 }

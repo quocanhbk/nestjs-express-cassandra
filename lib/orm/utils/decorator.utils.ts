@@ -4,8 +4,9 @@ import {
   ENTITY_METADATA,
   ENTITY_NAME_KEY,
   OPTIONS_KEY,
-} from '../orm.constant';
-import { mergeDeep } from './deep-merge.utils';
+  USER_DEFINED_TYPE_NAME_KEY,
+} from '../../orm/orm.constant';
+import { mergeDeep } from '../../orm/utils/deep-merge.utils';
 
 export function setEntity(target: any, entity: Function): void {
   Reflect.defineMetadata(ENTITY_METADATA, entity, target);
@@ -23,6 +24,14 @@ export function getEntityName(target: any): string {
   return Reflect.getMetadata(ENTITY_NAME_KEY, target);
 }
 
+export function setUserDefinedTypeName(target: any, name: string): void {
+  Reflect.defineMetadata(USER_DEFINED_TYPE_NAME_KEY, name, target);
+}
+
+export function getUserDefinedTypeName(target: any): string {
+  return Reflect.getMetadata(USER_DEFINED_TYPE_NAME_KEY, target);
+}
+
 export function getAttributes(target: any): any | undefined {
   const attributes = Reflect.getMetadata(ATTRIBUTE_KEY, target);
 
@@ -34,7 +43,7 @@ export function getAttributes(target: any): any | undefined {
   }
 }
 
-export function setAttributes(target: any, attributes: any) {
+export function setAttributes(target: Object, attributes: any) {
   Reflect.defineMetadata(ATTRIBUTE_KEY, { ...attributes }, target);
 }
 
@@ -56,7 +65,7 @@ export function addAttributeOptions(
 
 export function getOptions(target: any): any | undefined {
   const options = Reflect.getMetadata(OPTIONS_KEY, target);
-  return { ...options } || {};
+  return options ? { ...options } : {};
 }
 
 export function setOptions(target: any, options: any): void {

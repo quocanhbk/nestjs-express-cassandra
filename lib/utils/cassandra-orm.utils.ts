@@ -1,7 +1,12 @@
+import { Logger, Type } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { delay, retryWhen, scan } from 'rxjs/operators';
-import { Logger, Type } from '@nestjs/common';
-import { ConnectionOptions, Connection, Repository } from '../orm';
+import { Connection, ConnectionOptions, Repository } from '../orm';
+import { UserDefinedTypeColumnOptions } from '../orm/interfaces/user-defined-type-options.interface';
+import {
+  getAttributes,
+  getUserDefinedTypeName,
+} from '../orm/utils/decorator.utils';
 
 export function handleRetry(
   retryAttempts: number = 6,
@@ -75,3 +80,23 @@ export function getConnectionName(options: ConnectionOptions) {
 export const generateString = () =>
   // tslint:disable-next-line:no-bitwise
   [...Array(10)].map(i => ((Math.random() * 36) | 0).toString(36)).join;
+
+export const reduceUdts = (udts: Function[]) => {
+  return udts.reduce(
+    (acc, udt) => {
+      const typeName = getUserDefinedTypeName(udt);
+      const fields = getAttributes(udt.prototype) as Record<
+        string,
+        UserDefinedTypeColumnOptions
+      >;
+
+      acc[typeName] = Object.keys(fields).reduce((a, field) => {
+        a[field] = fields[field].type;
+        return a;
+      }, {});
+
+      return acc;
+    },
+    {} as Record<string, Record<string, UserDefinedTypeColumnOptions['type']>>,
+  );
+};

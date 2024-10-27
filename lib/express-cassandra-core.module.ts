@@ -1,30 +1,31 @@
 import {
   DynamicModule,
-  Module,
   Global,
-  Provider,
-  OnModuleDestroy,
   Inject,
   Logger,
+  Module,
+  OnModuleDestroy,
+  Provider,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import {
-  ExpressCassandraModuleOptions,
-  ExpressCassandraModuleAsyncOptions,
-  ExpressCassandraOptionsFactory,
-} from './interfaces';
-import {
-  EXPRESS_CASSANDRA_MODULE_OPTIONS,
-  EXPRESS_CASSANDRA_MODULE_ID,
-} from './express-cassandra.constant';
-import {
-  getConnectionToken,
-  handleRetry,
-  generateString,
-} from './utils/cassandra-orm.utils';
 import { defer } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ConnectionOptions, Connection } from './orm';
+import {
+  EXPRESS_CASSANDRA_MODULE_ID,
+  EXPRESS_CASSANDRA_MODULE_OPTIONS,
+} from './express-cassandra.constant';
+import {
+  ExpressCassandraModuleAsyncOptions,
+  ExpressCassandraModuleOptions,
+  ExpressCassandraOptionsFactory,
+} from './interfaces';
+import { Connection, ConnectionOptions } from './orm';
+import {
+  generateString,
+  getConnectionToken,
+  handleRetry,
+  reduceUdts,
+} from './utils/cassandra-orm.utils';
 
 @Global()
 @Module({})
@@ -132,7 +133,17 @@ export class ExpressCassandraCoreModule implements OnModuleDestroy {
     options: ExpressCassandraModuleOptions,
   ): Promise<Connection> {
     const { retryAttempts, retryDelay, ...cassandraOptions } = options;
-    const connection = new Connection(cassandraOptions);
+    const udts = cassandraOptions.udts
+      ? reduceUdts(cassandraOptions.udts)
+      : undefined;
+
+    const connection = new Connection({
+      ...cassandraOptions,
+      ormOptions: {
+        ...cassandraOptions.ormOptions,
+        udts,
+      },
+    });
 
     return await defer(() => connection.initAsync())
       .pipe(

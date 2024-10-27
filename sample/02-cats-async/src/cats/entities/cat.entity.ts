@@ -1,8 +1,8 @@
 import {
-  Entity,
   Column,
+  Entity,
   GeneratedUUidColumn,
-} from '@iaminfinity/express-cassandra';
+} from '@quocanhbk17/express-cassandra';
 
 @Entity({
   table_name: 'cats',

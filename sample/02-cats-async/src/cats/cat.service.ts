@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
   BaseModel,
+  InjectConnection,
   InjectModel,
   uuid,
-  InjectConnection,
-} from '@iaminfinity/express-cassandra';
-import { CatEntity } from './entities/cat.entity';
+} from '@quocanhbk17/express-cassandra';
 import { CreateCatDto } from './dto/create-cat.dto';
+import { CatEntity } from './entities/cat.entity';
 
 @Injectable()
 export class CatsService {

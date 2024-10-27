@@ -11,14 +11,10 @@
     "sourceMap": true,
     "rootDir": "./lib",
     "outDir": "./dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
-  "include": [
-    "lib/**/*",
-    "../index.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "include": ["lib/**/*", "../index.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
