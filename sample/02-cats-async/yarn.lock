@@ -88,10 +88,10 @@
     consola "^2.15.0"
     node-fetch "^2.6.1"
 
-"@quocanhbk17/express-cassandra@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@quocanhbk17/express-cassandra/-/express-cassandra-0.1.6.tgz#2076b28d6e530ee6fd27136ec55a0616535378c9"
-  integrity sha512-M1tozrrwCZFMnPVg+1cFOZsQ1zMVRHJdPhODYsy3oFFVSUXDYOTn6hTSGoZQRXdIH2JwZrBc93HCGwkg84Mj7A==
+"@quocanhbk17/express-cassandra@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@quocanhbk17/express-cassandra/-/express-cassandra-0.1.11.tgz#1a359ef6bfffca3aec71e5a9cc8115a814ae03f2"
+  integrity sha512-1+zezodK0vZz92M0hbapv8aYjmBIL7mBQl3iIT4nTb6A7unEud98Xtdzn79Fjj1qYBj7ESaD0rg/NE3S3maxng==
   dependencies:
     merge-deep "^3.0.3"
 

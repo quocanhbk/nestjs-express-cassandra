@@ -1,3 +1,5 @@
+import { types } from '../../..';
+
 type Callback = (error: Error, value?: any) => void;
 
 export interface BaseModel<T = any> {
@@ -173,7 +175,7 @@ export interface BaseModel<T = any> {
   [index: string]: any;
 }
 
-export interface BaseModelStatic<T> {
+export type BaseModelStatic<T> = T & {
   save(options: { return_query: boolean } & SaveOptionsStatic): string;
 
   save(callback?: Callback): void;
@@ -193,9 +195,7 @@ export interface BaseModelStatic<T> {
   isModify(key?: keyof T): boolean;
 
   toJSON(): T;
-
-  [index: string]: any;
-}
+};
 
 export interface FindQueryOptionsStatic<T = any> {
   select?: Array<String | keyof T>;
@@ -234,7 +234,7 @@ export interface FindQueryStatic<T> {
 export interface FindSubQueryStatic {
   $token?: any;
 
-  $in?: string[];
+  $in?: (types.Uuid | string)[];
 
   $like?: string;
 
