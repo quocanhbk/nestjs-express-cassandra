@@ -1,8 +1,8 @@
 import { AFTER_SAVE } from '../../orm.constant';
 import {
-  getOptions,
-  addOptions,
   addHookFunction,
+  addOptions,
+  getOptions,
 } from '../../utils/decorator.utils';
 
 export function AfterSave(): MethodDecorator {

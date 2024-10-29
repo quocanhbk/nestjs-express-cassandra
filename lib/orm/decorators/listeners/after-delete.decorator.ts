@@ -1,7 +1,7 @@
 import { AFTER_DELETE } from '../../orm.constant';
 import {
-  addOptions,
   addHookFunction,
+  addOptions,
   getOptions,
 } from '../../utils/decorator.utils';
 
@@ -18,7 +18,7 @@ export function AfterDelete(): MethodDecorator {
     const { after_delete } = getOptions(target);
     if (!after_delete) {
       addOptions(target, {
-        before_save: addHookFunction(target, AFTER_DELETE),
+        after_delete: addHookFunction(target, AFTER_DELETE),
       });
     }
     return descriptor;

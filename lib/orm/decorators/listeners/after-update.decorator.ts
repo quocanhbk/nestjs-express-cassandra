@@ -1,7 +1,7 @@
 import { AFTER_UPDATE } from '../../orm.constant';
 import {
-  addOptions,
   addHookFunction,
+  addOptions,
   getOptions,
 } from '../../utils/decorator.utils';
 
@@ -18,7 +18,7 @@ export function AfterUpdate(): MethodDecorator {
     const { after_update } = getOptions(target);
     if (!after_update) {
       addOptions(target, {
-        before_save: addHookFunction(target, AFTER_UPDATE),
+        after_update: addHookFunction(target, AFTER_UPDATE),
       });
     }
     return descriptor;

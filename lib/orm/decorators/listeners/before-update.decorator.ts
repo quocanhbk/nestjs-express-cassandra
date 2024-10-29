@@ -1,8 +1,8 @@
 import { BEFORE_UPDATE } from '../../orm.constant';
 import {
-  getOptions,
-  addOptions,
   addHookFunction,
+  addOptions,
+  getOptions,
 } from '../../utils/decorator.utils';
 
 export function BeforeUpdate(): MethodDecorator {
@@ -18,7 +18,7 @@ export function BeforeUpdate(): MethodDecorator {
     const { before_update } = getOptions(target);
     if (!before_update) {
       addOptions(target, {
-        before_save: addHookFunction(target, BEFORE_UPDATE),
+        before_update: addHookFunction(target, BEFORE_UPDATE),
       });
     }
     return descriptor;

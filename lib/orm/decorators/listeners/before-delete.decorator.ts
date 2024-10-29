@@ -1,8 +1,8 @@
 import { BEFORE_DELETE } from '../../orm.constant';
 import {
-  getOptions,
-  addOptions,
   addHookFunction,
+  addOptions,
+  getOptions,
 } from '../../utils/decorator.utils';
 
 export function BeforeDelete(): MethodDecorator {
@@ -18,7 +18,7 @@ export function BeforeDelete(): MethodDecorator {
     const { before_delete } = getOptions(target);
     if (!before_delete) {
       addOptions(target, {
-        before_save: addHookFunction(target, BEFORE_DELETE),
+        before_delete: addHookFunction(target, BEFORE_DELETE),
       });
     }
     return descriptor;
