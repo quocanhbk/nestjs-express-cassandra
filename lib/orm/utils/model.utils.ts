@@ -1,13 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { Connection } from '../interfaces';
-import { getAttributes, getEntityName, getOptions } from './decorator.utils';
+import { getAttributes, getOptions } from './decorator.utils';
 
-export function loadModel(
-  connection: Connection,
-  entity: Function,
-): Promise<any> {
+export function loadModel(connection: Connection, entity: any): Promise<any> {
   const schema = getSchema(entity);
-  const modelName = getEntityName(entity);
+  const modelName = entity.name || entity.table_name;
   const model = connection.loadSchema(modelName, schema);
 
   return new Promise(resolve => {
