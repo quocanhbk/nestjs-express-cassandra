@@ -17,7 +17,7 @@ export interface Connection extends FunctionConstructor {
 
   doBatchAsync(queries: string[]): Promise<any>;
 
-  loadSchema<T = any>(schema: any, name?: string): BaseModel<T>;
+  loadSchema<T = any>(name: string, schema: any): BaseModel<T>;
 
   instance: { [index: string]: BaseModel<any> };
 
