@@ -7,7 +7,7 @@ import {
 
 export function AfterSave(): MethodDecorator {
   return (
-    target: object,
+    target: Function,
     propertyKey: string | Symbol,
     descriptor: TypedPropertyDescriptor<any>,
   ) => {

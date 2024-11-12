@@ -1,6 +1,6 @@
 import { types } from 'cassandra-driver';
 
-export const isUuid = (id: any): boolean => id && id instanceof types.Uuid;
+export const isUuid = (id: any): boolean => !!id && id instanceof types.Uuid;
 
 export const uuid = (id?: any): types.Uuid => {
   if (!id) {
@@ -13,7 +13,7 @@ export const uuid = (id?: any): types.Uuid => {
 };
 
 export const isTimeUuid = (id: any): boolean =>
-  id && id instanceof types.TimeUuid;
+  !!id && id instanceof types.TimeUuid;
 
 export const timeuuid = (idOrDate?: string | Date): types.TimeUuid => {
   if (!idOrDate) {

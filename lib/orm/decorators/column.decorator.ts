@@ -4,7 +4,7 @@ import { addAttribute, addOptions, getOptions } from '../utils/decorator.utils';
 import { BeforeSave } from './listeners';
 
 export function Column(options: ColumnOptions): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     addAttribute(target, propertyName, options);
   };
 }
@@ -12,7 +12,7 @@ export function Column(options: ColumnOptions): PropertyDecorator {
 export function GeneratedUUidColumn(
   type: 'uuid' | 'timeuuid' = 'uuid',
 ): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     const fn: PropertyDescriptor = {
       value: (...args: any[]) => {
         const instance = args[0];
@@ -31,13 +31,13 @@ export function GeneratedUUidColumn(
 }
 
 export function VersionColumn(): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     addOptions(target, { options: { versions: { key: propertyName } } });
   };
 }
 
 export function CreateDateColumn(): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     addOptions(target, {
       options: { timestamps: { createdAt: propertyName } },
     });
@@ -45,7 +45,7 @@ export function CreateDateColumn(): PropertyDecorator {
 }
 
 export function UpdateDateColumn(): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     addOptions(target, {
       options: { timestamps: { updatedAt: propertyName } },
     });
@@ -53,7 +53,7 @@ export function UpdateDateColumn(): PropertyDecorator {
 }
 
 export function IndexColumn(): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     let { indexes } = getOptions(target);
     indexes = indexes || [];
 
