@@ -8,31 +8,31 @@ import {
 } from '../../orm/orm.constant';
 import { mergeDeep } from '../../orm/utils/deep-merge.utils';
 
-export function setEntity(target: Function, entity: Function): void {
+export function setEntity(target: object, entity: Function): void {
   Reflect.defineMetadata(ENTITY_METADATA, entity, target);
 }
 
-export function getEntity(target: Function): Function {
+export function getEntity(target: object): Function {
   return Reflect.getMetadata(ENTITY_METADATA, target);
 }
 
-export function setEntityName(target: Function, modelName: string): void {
+export function setEntityName(target: object, modelName: string): void {
   Reflect.defineMetadata(ENTITY_NAME_KEY, modelName, target);
 }
 
-export function getEntityName(target: Function): string {
+export function getEntityName(target: object): string {
   return Reflect.getMetadata(ENTITY_NAME_KEY, target);
 }
 
-export function setUserDefinedTypeName(target: Function, name: string): void {
+export function setUserDefinedTypeName(target: object, name: string): void {
   Reflect.defineMetadata(USER_DEFINED_TYPE_NAME_KEY, name, target);
 }
 
-export function getUserDefinedTypeName(target: Function): string {
+export function getUserDefinedTypeName(target: object): string {
   return Reflect.getMetadata(USER_DEFINED_TYPE_NAME_KEY, target);
 }
 
-export function getAttributes(target: Function): Record<string, any> {
+export function getAttributes(target: object): Record<string, any> {
   const attributes = Reflect.getMetadata(ATTRIBUTE_KEY, target);
 
   if (attributes) {
@@ -49,24 +49,20 @@ export function getAttributes(target: Function): Record<string, any> {
 }
 
 export function setAttributes(
-  target: Function,
+  target: object,
   attributes: Record<string, any>,
 ): void {
   Reflect.defineMetadata(ATTRIBUTE_KEY, { ...attributes }, target);
 }
 
-export function addAttribute(
-  target: Function,
-  name: string,
-  options: any,
-): void {
+export function addAttribute(target: object, name: string, options: any): void {
   const attributes = getAttributes(target);
   attributes[name] = { ...options };
   setAttributes(target, attributes);
 }
 
 export function addAttributeOptions(
-  target: Function,
+  target: object,
   propertyName: string,
   options: any,
 ): void {
@@ -75,28 +71,22 @@ export function addAttributeOptions(
   setAttributes(target, attributes);
 }
 
-export function getOptions(target: Function): Record<string, any> {
+export function getOptions(target: object): Record<string, any> {
   const options = Reflect.getMetadata(OPTIONS_KEY, target);
   return options ? { ...options } : {};
 }
 
-export function setOptions(
-  target: Function,
-  options: Record<string, any>,
-): void {
+export function setOptions(target: object, options: Record<string, any>): void {
   Reflect.defineMetadata(OPTIONS_KEY, { ...options }, target);
 }
 
-export function addOptions(
-  target: Function,
-  options: Record<string, any>,
-): void {
+export function addOptions(target: object, options: Record<string, any>): void {
   const mOptions = getOptions(target) || {};
   setOptions(target, mergeDeep(mOptions, options));
 }
 
 export const addHookFunction = (
-  target: Function,
+  target: object,
   metadataKey: string,
 ): ((...args: any[]) => any[]) => {
   const funcLikeArray: any[] = Reflect.getMetadata(metadataKey, target) || [];
