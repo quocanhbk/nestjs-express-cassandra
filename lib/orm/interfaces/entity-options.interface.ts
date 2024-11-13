@@ -5,11 +5,11 @@ export interface EntityOptions<T = object> {
 
   key?: Array<keyof T | Array<keyof T>>;
 
-  materialized_views?: { [index: string]: MaterializeViewStatic<T> };
+  materialized_views?: { [name: string]: MaterializeViewStatic<T> };
 
-  clustering_order?: { [index: string]: 'desc' | 'asc' };
+  clustering_order?: { [K in keyof T]?: 'desc' | 'asc' };
 
-  options?: EntityExtraOptions;
+  options?: Readonly<EntityExtraOptions>;
 
   indexes?: Array<keyof T> | string[];
 
@@ -63,7 +63,7 @@ interface CustomIndexOptions {
 }
 
 type EsIndexPropertiesOptionsStatic<T> = {
-  [P in keyof T]?: { type?: string; index?: string }
+  [P in keyof T]?: { type?: string; index?: string };
 };
 
 interface GraphMappingOptionsStatic<Entity = any> {
