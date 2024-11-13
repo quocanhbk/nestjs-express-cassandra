@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   GeneratedUuidColumn,
+  IndexColumn,
   UpdateDateColumn,
   VersionColumn,
 } from '../../../lib/orm/decorators/column.decorator';
@@ -654,5 +655,133 @@ describe('@UpdateDateColumn', () => {
     expect(attributes.name).toEqual({ type: 'text' });
   });
 });
+
+describe('@IndexColumn', () => {
+  it('should add property to indexes array in options', () => {
+    // Arrange & Act
+    class TestClass {
+      @IndexColumn()
+      email: string;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.indexes).toEqual(['email']);
+  });
+
+  it('should handle multiple index columns in the same class', () => {
+    // Arrange & Act
+    class TestClass {
+      @IndexColumn()
+      email: string;
+
+      @IndexColumn()
+      username: string;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.indexes).toEqual(['email', 'username']);
+  });
+
+  it('should not add duplicate indexes for the same property', () => {
+    // Arrange & Act
+    class TestClass {
+      @IndexColumn()
+      @IndexColumn()
+      email: string;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.indexes).toEqual(['email']);
+  });
+
+  it('should work with other column decorators', () => {
+    // Arrange & Act
+    class TestClass {
+      @IndexColumn()
+      @Column({ type: 'text' })
+      email: string;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    const attributes = getAttributes(TestClass.prototype);
+
+    expect(options.indexes).toEqual(['email']);
+    expect(attributes.email).toEqual({ type: 'text' });
+  });
+
+  it('should preserve existing indexes when adding new ones', () => {
+    // Arrange & Act
+    class TestClass {
+      @IndexColumn()
+      email: string;
+
+      @Column({ type: 'text' })
+      name: string;
+
+      @IndexColumn()
+      age: number;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.indexes).toEqual(['email', 'age']);
+  });
+
+  it('should maintain independent indexes for different classes', () => {
+    // Arrange & Act
+    class FirstClass {
+      @IndexColumn()
+      email: string;
+    }
+
+    class SecondClass {
+      @IndexColumn()
+      username: string;
+    }
+
+    // Assert
+    const firstOptions = getOptions(FirstClass.prototype);
+    const secondOptions = getOptions(SecondClass.prototype);
+
+    expect(firstOptions.indexes).toEqual(['email']);
+    expect(secondOptions.indexes).toEqual(['username']);
+  });
+
+  it('should work with all other column-related decorators', () => {
+    // Arrange & Act
+    class TestClass {
+      @IndexColumn()
+      @Column({ type: 'text' })
+      email: string;
+
+      @IndexColumn()
+      @VersionColumn()
+      version: number;
+
+      @IndexColumn()
+      @CreateDateColumn()
+      createdAt: Date;
+
+      @IndexColumn()
+      @UpdateDateColumn()
+      updatedAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    
+    expect(options.indexes).toEqual(['email', 'version', 'createdAt', 'updatedAt']);
+    expect(options.options.versions.key).toBe('version');
+    expect(options.options.timestamps).toEqual({
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    });
+  });
+});
+
 
 
