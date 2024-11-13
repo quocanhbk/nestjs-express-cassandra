@@ -5,7 +5,7 @@ import {
   getOptions,
 } from '../../../lib/orm/utils/decorator.utils';
 
-describe('Entity Decorator', () => {
+describe('@Entity', () => {
   it('should set entity name using class name in plural snake_case when no name provided', () => {
     // Arrange & Act
     @Entity()

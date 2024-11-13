@@ -1,7 +1,10 @@
 import { types } from 'cassandra-driver';
 import {
   Column,
+  CreateDateColumn,
   GeneratedUuidColumn,
+  UpdateDateColumn,
+  VersionColumn,
 } from '../../../lib/orm/decorators/column.decorator';
 import { OrmError } from '../../../lib/orm/errors';
 import { ColumnOptions } from '../../../lib/orm/interfaces';
@@ -358,7 +361,7 @@ describe('@GeneratedUuidColumn', () => {
       TestClass.prototype,
       'beforeSave',
     );
-    descriptor.value && descriptor.value(instance);
+    descriptor?.value && descriptor.value(instance);
 
     // Assert
     expect(instance.id).toBe(existingId);
@@ -379,7 +382,7 @@ describe('@GeneratedUuidColumn', () => {
       TestClass.prototype,
       'beforeSave',
     );
-    descriptor.value && descriptor.value(instance);
+    descriptor?.value && descriptor.value(instance);
 
     // Assert
     expect(instance.id).toBe(existingId);
@@ -397,7 +400,7 @@ describe('@GeneratedUuidColumn', () => {
       TestClass.prototype,
       'beforeSave',
     );
-    expect(() => descriptor.value && descriptor.value(null)).not.toThrow();
+    expect(() => descriptor?.value && descriptor.value(null)).not.toThrow();
   });
 
   it('should allow multiple UUID columns in the same class', () => {
@@ -424,3 +427,232 @@ describe('@GeneratedUuidColumn', () => {
     });
   });
 });
+
+describe('@VersionColumn', () => {
+  it('should add version column configuration to options', () => {
+    // Arrange & Act
+    class TestClass {
+      @VersionColumn()
+      version: number;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options).toEqual({
+      versions: {
+        key: 'version',
+      },
+    });
+  });
+
+  it('should allow multiple version columns in different classes', () => {
+    // Arrange & Act
+    class FirstClass {
+      @VersionColumn()
+      version: number;
+    }
+
+    class SecondClass {
+      @VersionColumn()
+      versionNumber: number;
+    }
+
+    // Assert
+    const firstOptions = getOptions(FirstClass.prototype);
+    const secondOptions = getOptions(SecondClass.prototype);
+
+    expect(firstOptions.options.versions.key).toBe('version');
+    expect(secondOptions.options.versions.key).toBe('versionNumber');
+  });
+
+  it('should preserve existing options when adding version column', () => {
+    // Arrange & Act
+    class TestClass {
+      @Column({ type: 'text' })
+      name: string;
+
+      @VersionColumn()
+      version: number;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    const attributes = getAttributes(TestClass.prototype);
+
+    expect(options.options.versions.key).toBe('version');
+    expect(attributes.name).toEqual({ type: 'text' });
+  });
+
+  it('should work with other column decorators', () => {
+    // Arrange & Act
+    class TestClass {
+      @Column({ type: 'text' })
+      name: string;
+
+      @VersionColumn()
+      @Column({ type: 'int' })
+      version: number;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    const attributes = getAttributes(TestClass.prototype);
+
+    expect(options.options.versions.key).toBe('version');
+    expect(attributes.version).toEqual({ type: 'int' });
+  });
+});
+
+describe('@CreateDateColumn', () => {
+  it('should add createdAt timestamp configuration to options', () => {
+    // Arrange & Act
+    class TestClass {
+      @CreateDateColumn()
+      createdAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options.timestamps).toEqual({
+      createdAt: 'createdAt'
+    });
+  });
+
+  it('should work with custom property name', () => {
+    // Arrange & Act
+    class TestClass {
+      @CreateDateColumn()
+      created: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options.timestamps).toEqual({
+      createdAt: 'created'
+    });
+  });
+
+  it('should preserve existing timestamp options', () => {
+    // Arrange & Act
+    class TestClass {
+      @CreateDateColumn()
+      createdAt: Date;
+
+      @UpdateDateColumn()
+      updatedAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options.timestamps).toEqual({
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    });
+  });
+
+  it('should work with other column decorators', () => {
+    // Arrange & Act
+    class TestClass {
+      @CreateDateColumn()
+      @Column({ type: 'timestamp' })
+      createdAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    const attributes = getAttributes(TestClass.prototype);
+
+    expect(options.options.timestamps.createdAt).toBe('createdAt');
+    expect(attributes.createdAt).toEqual({ type: 'timestamp' });
+  });
+});
+
+describe('@UpdateDateColumn', () => {
+  it('should add updatedAt timestamp configuration to options', () => {
+    // Arrange & Act
+    class TestClass {
+      @UpdateDateColumn()
+      updatedAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options.timestamps).toEqual({
+      updatedAt: 'updatedAt'
+    });
+  });
+
+  it('should work with custom property name', () => {
+    // Arrange & Act
+    class TestClass {
+      @UpdateDateColumn()
+      lastModified: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options.timestamps).toEqual({
+      updatedAt: 'lastModified'
+    });
+  });
+
+  it('should preserve existing timestamp options', () => {
+    // Arrange & Act
+    class TestClass {
+      @UpdateDateColumn()
+      updatedAt: Date;
+
+      @CreateDateColumn()
+      createdAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    expect(options.options.timestamps).toEqual({
+      updatedAt: 'updatedAt',
+      createdAt: 'createdAt'
+    });
+  });
+
+  it('should work with other column decorators', () => {
+    // Arrange & Act
+    class TestClass {
+      @UpdateDateColumn()
+      @Column({ type: 'timestamp' })
+      updatedAt: Date;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    const attributes = getAttributes(TestClass.prototype);
+
+    expect(options.options.timestamps.updatedAt).toBe('updatedAt');
+    expect(attributes.updatedAt).toEqual({ type: 'timestamp' });
+  });
+
+  it('should allow both timestamp columns in the same class', () => {
+    // Arrange & Act
+    class TestClass {
+      @CreateDateColumn()
+      created: Date;
+
+      @UpdateDateColumn()
+      modified: Date;
+
+      @Column({ type: 'text' })
+      name: string;
+    }
+
+    // Assert
+    const options = getOptions(TestClass.prototype);
+    const attributes = getAttributes(TestClass.prototype);
+
+    expect(options.options.timestamps).toEqual({
+      createdAt: 'created',
+      updatedAt: 'modified'
+    });
+    expect(attributes.name).toEqual({ type: 'text' });
+  });
+});
+
+
