@@ -9,9 +9,7 @@ export function UserDefinedType(
     const name =
       typeof nameOrOptions === 'string'
         ? nameOrOptions
-        : typeof nameOrOptions === 'object'
-        ? nameOrOptions.name
-        : pascalToSnakeCase(target.name);
+        : nameOrOptions?.name || pascalToSnakeCase(target.name);
     setUserDefinedTypeName(target, name);
   };
 }
