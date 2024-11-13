@@ -1,13 +1,13 @@
 import { BEFORE_SAVE } from '../../orm.constant';
 import {
-  addOptions,
   addHookFunction,
+  addOptions,
   getOptions,
 } from '../../utils/decorator.utils';
 
 export function BeforeSave(): MethodDecorator {
   return (
-    target: object,
+    target: Function,
     propertyKey: string | Symbol,
     descriptor: TypedPropertyDescriptor<any>,
   ) => {

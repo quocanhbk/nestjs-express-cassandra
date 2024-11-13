@@ -7,7 +7,7 @@ import {
 
 export function BeforeDelete(): MethodDecorator {
   return (
-    target: object,
+    target: Function,
     propertyKey: string | Symbol,
     descriptor: TypedPropertyDescriptor<any>,
   ) => {

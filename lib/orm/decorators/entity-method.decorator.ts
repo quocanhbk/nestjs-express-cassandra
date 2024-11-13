@@ -1,8 +1,8 @@
-import { getOptions, addOptions } from '../utils/decorator.utils';
+import { addOptions, getOptions } from '../utils/decorator.utils';
 
 export function EntityMethod(): MethodDecorator {
   return (
-    target: object,
+    target: Function,
     propertyKey: string,
     descriptor: TypedPropertyDescriptor<any>,
   ) => {

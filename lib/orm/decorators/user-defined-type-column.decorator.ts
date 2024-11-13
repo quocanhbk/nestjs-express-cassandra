@@ -4,7 +4,7 @@ import { addAttribute } from '../utils/decorator.utils';
 export function UserDefinedTypeColumn(
   options: UserDefinedTypeColumnOptions,
 ): PropertyDecorator {
-  return (target: object, propertyName: string) => {
+  return (target: Function, propertyName: string) => {
     addAttribute(target, propertyName, options);
   };
 }
