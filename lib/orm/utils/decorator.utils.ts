@@ -32,7 +32,7 @@ export function getUserDefinedTypeName(target: Function): string {
   return Reflect.getMetadata(USER_DEFINED_TYPE_NAME_KEY, target);
 }
 
-export function getAttributes(target: Function): Record<string, any> {
+export function getAttributes(target: object): Record<string, any> {
   const attributes = Reflect.getMetadata(ATTRIBUTE_KEY, target);
 
   if (attributes) {

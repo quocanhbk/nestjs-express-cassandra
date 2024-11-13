@@ -1,10 +1,40 @@
-import { ColumnOptions } from '../interfaces';
+import 'reflect-metadata';
+import { OrmError } from '../errors';
+import { ColumnOptions, ColumnType } from '../interfaces';
 import { timeuuid, uuid } from '../utils/db.utils';
 import { addAttribute, addOptions, getOptions } from '../utils/decorator.utils';
 import { BeforeSave } from './listeners';
 
-export function Column(options: ColumnOptions): PropertyDecorator {
-  return (target: Function, propertyName: string) => {
+function getTypeFromMetadata(
+  target: Function,
+  propertyName: string,
+): ColumnType {
+  const type = Reflect.getMetadata('design:type', target, propertyName);
+
+  // Map TypeScript types to database types
+  switch (type) {
+    case String:
+      return 'text';
+    case Number:
+      return 'int';
+    case Boolean:
+      return 'boolean';
+    default:
+      throw new OrmError('UNSUPPORTED_TYPE', {
+        property: propertyName,
+        type: type.name,
+        context: 'column_decorator',
+        solution:
+          'Please explicitly specify the column type using @Column({ type: "desired_type" })',
+      });
+  }
+}
+
+export function Column(options: ColumnOptions = {}): PropertyDecorator {
+  return function(target: Function, propertyName: string) {
+    if (!options.type) {
+      options.type = getTypeFromMetadata(target, propertyName);
+    }
     addAttribute(target, propertyName, options);
   };
 }

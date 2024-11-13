@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "watch": "tsc -w",
     "precommit": "lint-staged",
     "prepublish:npm": "npm run build",
@@ -63,32 +63,12 @@
     "nestjs",
     "cassandra",
     "apache-cassandra",
+    "scylla",
     "datastax",
     "orm",
     "express-cassandra",
     "node",
     "nodejs",
     "javascript"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": ".",
-    "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "reporters": [
-      "default",
-      "jest-spec-reporter"
-    ]
-  }
+  ]
 }
