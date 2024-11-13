@@ -1,9 +1,16 @@
-import { Column } from '../../../lib/orm/decorators/column.decorator';
+import { types } from 'cassandra-driver';
+import {
+  Column,
+  GeneratedUuidColumn,
+} from '../../../lib/orm/decorators/column.decorator';
 import { OrmError } from '../../../lib/orm/errors';
 import { ColumnOptions } from '../../../lib/orm/interfaces';
-import { getAttributes } from '../../../lib/orm/utils/decorator.utils';
+import {
+  getAttributes,
+  getOptions,
+} from '../../../lib/orm/utils/decorator.utils';
 
-describe('Column Decorator', () => {
+describe('@Column', () => {
   class TestEntity {}
 
   it('should add column with basic type', () => {
@@ -267,6 +274,153 @@ describe('Column Decorator', () => {
           custom: CustomType;
         }
       }).not.toThrow();
+    });
+  });
+});
+
+describe('@GeneratedUuidColumn', () => {
+  it('should set up UUID column with default configuration', () => {
+    // Act
+    class TestClass {
+      @GeneratedUuidColumn()
+      id: types.Uuid;
+    }
+
+    // Assert
+    const attributes = getAttributes(TestClass.prototype);
+    expect(attributes.id).toEqual({
+      type: 'uuid',
+      default: { $db_function: 'uuid()' },
+    });
+  });
+
+  it('should set up TimeUUID column when specified', () => {
+    // Act
+    class TestClass {
+      @GeneratedUuidColumn('timeuuid')
+      id: types.TimeUuid;
+    }
+
+    // Assert
+    const attributes = getAttributes(TestClass.prototype);
+    expect(attributes.id).toEqual({
+      type: 'timeuuid',
+      default: { $db_function: 'now()' },
+    });
+  });
+
+  it('should generate UUID value before save if not set', () => {
+    // Arrange
+    class TestClass {
+      @GeneratedUuidColumn()
+      id: types.Uuid;
+    }
+    const instance = new TestClass();
+
+    // Act
+    const options = getOptions(TestClass.prototype);
+    const beforeSaveHook = options.before_save;
+    beforeSaveHook(instance);
+
+    // Assert
+    expect(instance.id).toBeInstanceOf(types.Uuid);
+  });
+
+  it('should generate TimeUUID value before save if not set', () => {
+    // Arrange
+    class TestClass {
+      @GeneratedUuidColumn('timeuuid')
+      id: types.TimeUuid;
+    }
+    const instance = new TestClass();
+
+    // Act
+    const options = getOptions(TestClass.prototype);
+    const beforeSaveHook = options.before_save;
+    beforeSaveHook(instance);
+
+    // Assert
+    expect(instance.id).toBeInstanceOf(types.TimeUuid);
+  });
+
+  it('should not override existing UUID value before save', () => {
+    // Arrange
+    class TestClass {
+      @GeneratedUuidColumn()
+      id: types.Uuid;
+    }
+    const instance = new TestClass();
+    const existingId = types.Uuid.random();
+    instance.id = existingId;
+
+    // Act
+    const descriptor = Object.getOwnPropertyDescriptor(
+      TestClass.prototype,
+      'beforeSave',
+    );
+    descriptor.value && descriptor.value(instance);
+
+    // Assert
+    expect(instance.id).toBe(existingId);
+  });
+
+  it('should not override existing TimeUUID value before save', () => {
+    // Arrange
+    class TestClass {
+      @GeneratedUuidColumn('timeuuid')
+      id: types.TimeUuid;
+    }
+    const instance = new TestClass();
+    const existingId = types.TimeUuid.now();
+    instance.id = existingId;
+
+    // Act
+    const descriptor = Object.getOwnPropertyDescriptor(
+      TestClass.prototype,
+      'beforeSave',
+    );
+    descriptor.value && descriptor.value(instance);
+
+    // Assert
+    expect(instance.id).toBe(existingId);
+  });
+
+  it('should handle null instance in beforeSave hook', () => {
+    // Arrange
+    class TestClass {
+      @GeneratedUuidColumn()
+      id: types.Uuid;
+    }
+
+    // Act & Assert
+    const descriptor = Object.getOwnPropertyDescriptor(
+      TestClass.prototype,
+      'beforeSave',
+    );
+    expect(() => descriptor.value && descriptor.value(null)).not.toThrow();
+  });
+
+  it('should allow multiple UUID columns in the same class', () => {
+    // Act
+    class TestClass {
+      @GeneratedUuidColumn()
+      id1: types.Uuid;
+
+      @GeneratedUuidColumn('timeuuid')
+      id2: types.TimeUuid;
+    }
+
+    // Assert
+    const attributes = getAttributes(TestClass.prototype);
+    expect(attributes).toEqual({
+      id1: {
+        type: 'uuid',
+        default: { $db_function: 'uuid()' },
+      },
+      id2: {
+        type: 'timeuuid',
+        default: { $db_function: 'now()' },
+      },
     });
   });
 });

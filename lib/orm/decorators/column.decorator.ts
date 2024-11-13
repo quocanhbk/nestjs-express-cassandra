@@ -39,7 +39,7 @@ export function Column(options: ColumnOptions = {}): PropertyDecorator {
   };
 }
 
-export function GeneratedUUidColumn(
+export function GeneratedUuidColumn(
   type: 'uuid' | 'timeuuid' = 'uuid',
 ): PropertyDecorator {
   return (target: Function, propertyName: string) => {
