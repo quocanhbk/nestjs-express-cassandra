@@ -3,14 +3,16 @@ import { pascalToSnakeCase } from '../../utils/string';
 import { EntityOptions } from '../interfaces';
 import { addOptions, setEntityName } from '../utils/decorator.utils';
 
-export function Entity<T = any>(options?: EntityOptions<T>): ClassDecorator;
-export function Entity<T = any>(
+export function Entity<T extends new (...args: any[]) => any>(
+  options?: EntityOptions<InstanceType<T>>,
+): ClassDecorator<T>;
+export function Entity<T extends new (...args: any[]) => any>(
   name?: string,
-  options?: EntityOptions<T>,
-): ClassDecorator;
+  options?: EntityOptions<InstanceType<T>>,
+): ClassDecorator<T>;
 export function Entity(
-  nameOrOptions?: string | EntityOptions,
-  maybeOptions?: EntityOptions,
+  nameOrOptions?: string | EntityOptions<any>,
+  maybeOptions?: EntityOptions<any>,
 ): ClassDecorator {
   // Add validation
   if (
@@ -23,7 +25,7 @@ export function Entity(
     );
   }
 
-  const options: any =
+  const options: EntityOptions =
     (typeof nameOrOptions === 'object'
       ? (nameOrOptions as EntityOptions)
       : maybeOptions) || {};
@@ -41,3 +43,5 @@ export function Entity(
     addOptions(target, options);
   };
 }
+
+type ClassDecorator<T = any> = (target: T) => void | T;

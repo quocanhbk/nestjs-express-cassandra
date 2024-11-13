@@ -1,21 +1,37 @@
 import { FindSubQueryStatic } from './externals/express-cassandra.interface';
 
-export interface EntityOptions<T = object> {
+// Define relationship types as a union
+type RelationType = 'MULTI' | 'SIMPLE' | 'MANY2ONE' | 'ONE2MANY' | 'ONE2ONE';
+
+// Define direction type
+type Direction = 'BOTH' | 'IN' | 'OUT';
+
+// Define index types
+type IndexType = 'Composite' | 'Mixed' | 'VertexCentric';
+
+// Define order type
+type OrderType = 'desc' | 'asc';
+type GraphOrderType = 'incr' | 'decr';
+
+// Improve cardinality type
+type Cardinality = 'SINGLE' | 'LIST' | 'SET';
+
+export interface EntityOptions<T extends object = object> {
   table_name?: string;
 
   key?: Array<keyof T | Array<keyof T>>;
 
-  materialized_views?: { [index: string]: MaterializeViewStatic<T> };
+  materialized_views?: Record<string, MaterializeViewStatic<T>>;
 
-  clustering_order?: { [index: string]: 'desc' | 'asc' };
+  clustering_order?: Partial<Record<keyof T, OrderType>>;
 
-  options?: EntityExtraOptions;
+  options?: Readonly<EntityExtraOptions>;
 
-  indexes?: Array<keyof T> | string[];
+  indexes?: Array<keyof T | string>;
 
-  custom_indexes?: Partial<CustomIndexOptions>[];
+  custom_indexes?: CustomIndexOptions[];
 
-  methods?: { [index: string]: Function };
+  methods?: Record<string, Function>;
 
   es_index_mapping?: {
     discover?: string;
@@ -23,9 +39,7 @@ export interface EntityOptions<T = object> {
     properties?: EsIndexPropertiesOptionsStatic<T>;
   };
 
-  graph_mapping?: Partial<
-    GraphMappingOptionsStatic<T | { [index: string]: any }>
-  >;
+  graph_mapping?: Partial<GraphMappingOptionsStatic<T>>;
 
   [index: string]: any;
 }
@@ -63,39 +77,41 @@ interface CustomIndexOptions {
 }
 
 type EsIndexPropertiesOptionsStatic<T> = {
-  [P in keyof T]?: { type?: string; index?: string }
+  [P in keyof T]?: { type?: string; index?: string };
 };
 
-interface GraphMappingOptionsStatic<Entity = any> {
+interface GraphMappingOptionsStatic<Entity extends object = object> {
   relations: {
-    follow?: 'MULTI' | 'SIMPLE' | 'MANY2ONE' | 'ONE2MANY' | 'ONE2ONE';
+    follow?: RelationType;
 
-    mother?: 'MULTI' | 'SIMPLE' | 'MANY2ONE' | 'ONE2MANY' | 'ONE2ONE';
+    mother?: RelationType;
   };
 
-  properties: {
-    [index: string]: {
+  properties: Record<
+    string,
+    {
       type?: JanusGraphDataTypes;
 
-      cardinality?: 'SINGLE' | 'LIST' | 'SET';
-    };
-  };
+      cardinality?: Cardinality;
+    }
+  >;
 
-  indexes: {
-    [index: string]: {
-      type?: 'Composite' | 'Mixed' | 'VertexCentric';
+  indexes: Record<
+    string,
+    {
+      type?: IndexType;
 
-      keys?: Array<keyof Entity | {}>;
+      keys?: Array<keyof Entity | Record<string, never>>;
 
       label?: 'follow';
 
-      direction?: 'BOTH' | 'IN' | 'OUT';
+      direction?: Direction;
 
-      order?: 'incr' | 'decr';
+      order?: GraphOrderType;
 
       unique?: boolean;
-    };
-  };
+    }
+  >;
 }
 
 type JanusGraphDataTypes =
